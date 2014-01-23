@@ -177,6 +177,7 @@ sub expand {
     next unless $p->isa('Grammar::Formal::Grammar');
     return $p->rules->{$self->ref} if $p->rules->{$self->ref};
   }
+  warn "rule expansion for " . $self->ref . " failed.";
   return
 }
 
@@ -220,6 +221,7 @@ has 'rules' => (
 sub set_rule {
   my ($self, $name, $value) = @_;
   $self->rules->{$name} = $value;
+  $value->_set_parent($self);
 }
 
 # TODO: validate that rules include start symbol?
@@ -347,9 +349,9 @@ has 'spans'  => (
 );
 
 sub from_numbers {
-  my ($class, $g, @numbers) = @_;
+  my ($class, @numbers) = @_;
   my $spans = Set::IntSpan->new([@numbers]);
-  return $class->new(grammar => $g, spans => $spans);
+  return $class->new(spans => $spans);
 }
 
 #####################################################################
@@ -362,7 +364,7 @@ use Moose;
 
 extends 'Grammar::Formal::Grammar';
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 1;
 
